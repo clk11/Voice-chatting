@@ -1,0 +1,13 @@
+I can use that in case i want to have a many to many relationship between ips and usernames
+    
+    //let idip,idusername;
+    // let qResult = (await db.query(`select * from t_ip where ip = $1`,[ipAddress])).rows[0];
+    // if(!qResult) 
+    //     idip = (await db.query(`insert into t_ip(ipAddress)values($1) returning id;`)).rows[0].id;
+    // else idip = qResult.id;
+    // qResult = (await db.query(`select * from t_username where username = $1`,[username])).rows[0];
+    // if(!qResult)
+    //     idusername = (await db.query(`insert into t_username(username)values($1) returning id;`)).rows[0].id;
+    // else idusername = qResult.id;
+    // qResult = (await db.query(`select * from t_user where id_username = $1 and id_ip = $2`,[idusername,idip])).rows[0];
+    // if(!qResult) (await db.query(`insert into t_user (id_username,id_ip)values($1,$2)`,[idusername,idip]));
