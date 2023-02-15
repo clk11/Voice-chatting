@@ -2,22 +2,23 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import Recorder from './pages/Recorder';
-import { LoginContext } from './contexts/LoginContext';
+import AppContext from './contexts/AppContext';
+import setAuthToken from './server/utils/setAuthToken'
 const App = () => {
 	const [username,setUsername] = useState('');
-	const [isAuth, setIsAuth] = useState(false);
+	const [room,setRoom] = useState('');
 	return (
-		<LoginContext.Provider value={{ isAuth }}>
+		<AppContext.Provider value={{username,setUsername,room,setRoom}}>
 			<Router>
 				<Routes>
-					{isAuth ? (
+					{(localStorage.getItem('token') === null ? false : true )? (
 						<Route path='/' element={<Recorder />} />
 					) : (
 						<Route path='/' element={<Login />} />
 					)}
 				</Routes>
 			</Router>
-		</LoginContext.Provider>
+		</AppContext.Provider>
 	);
 };
 
