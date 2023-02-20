@@ -12,23 +12,22 @@ app.use(cors());
 app.post('/login', async (req, res) => {
     const ipAddress = req.socket.remoteAddress;
     const { username, room } = req.body;
-    const userInfo = {
+    const user = {
         username,
         room
     }
-    // const userInfo = await db.query(`insert into t_user (username,ip,room)values($1,$2,$2) returning username,room;`,[username,ipAddress,room]);
     let payload = {
-        userInfo
+        user
     };
     const token = jwt.sign(payload, config.get('jwtSecret'), {
-        expiresIn: '3hr',
+        expiresIn: '1h',
     });    
     return res.json({ token });
 });
 
 app.get('/',auth,async(req,res)=>{
     try {
-		// res.json({data : req.userInfo});
+        res.json({user : req.user})
 	} catch (err) {
 		res.status(401).send({ msg: 'Permission denied !' });
 	}

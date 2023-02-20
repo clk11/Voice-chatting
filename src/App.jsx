@@ -5,20 +5,21 @@ import Recorder from './pages/Recorder';
 import AppContext from './contexts/AppContext';
 import setAuthToken from './server/utils/setAuthToken'
 const App = () => {
-	const [username,setUsername] = useState('');
-	const [room,setRoom] = useState('');
+	// const [username,setUsername] = useState('');
+	// const [room,setRoom] = useState('');
+	setAuthToken(localStorage.token);
 	return (
-		<AppContext.Provider value={{username,setUsername,room,setRoom}}>
-			<Router>
-				<Routes>
-					{(localStorage.getItem('token') === null ? false : true )? (
-						<Route path='/' element={<Recorder />} />
-					) : (
-						<Route path='/' element={<Login />} />
-					)}
-				</Routes>
-			</Router>
-		</AppContext.Provider>
+		// <AppContext.Provider value={{user}}>
+		<Router>
+			<Routes>
+				{(localStorage.getItem('token') === null ? false : true) ? (
+					<Route path='/' element={<Recorder />} />
+				) : (
+					<Route path='/' element={<Login />} />
+				)}
+			</Routes>
+		</Router>
+		// </AppContext.Provider>
 	);
 };
 

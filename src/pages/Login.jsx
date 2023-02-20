@@ -6,14 +6,13 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from 'axios';
 import AppContext from '../contexts/AppContext';
-import setAuthToken from '../server/utils/setAuthToken';
-import Link from '@mui/material/Link';
 import { Grid } from '@mui/material';
 const config = {
     'Content-Type': 'application/json',
 };
 const Login = () => {
-    const { username, setUsername, room, setRoom } = useContext(AppContext);
+    const [username,setUsername] = useState('');
+    const [room,setRoom] = useState('');
     const handleUsernameChange = (e) => {
         setUsername(e.target.value);
     };
@@ -27,8 +26,8 @@ const Login = () => {
     }
     const onLoginClick = async () => {
         if (username.length !== 0 && room.length !== 0) {
-            const result = await axios.post(`http://localhost:3001/login`, { username,setRoom }, config);
-            localStorage.setItem('token',result.data.token);
+            const token = (await axios.post(`http://localhost:3001/login`, { username,room }, config)).data.token;
+            localStorage.setItem('token',token);
             window.location.reload();
         }
         else alert('You need to complete everything !');
