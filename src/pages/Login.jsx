@@ -1,33 +1,28 @@
-import React, { useState, useContext, useEffect } from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
+import React, { useState } from 'react';
+import { Button, TextField, Box, Typography, Container, Paper } from '@mui/material'
 import axios from 'axios';
-import AppContext from '../contexts/AppContext';
 import { Grid } from '@mui/material';
 const config = {
     'Content-Type': 'application/json',
 };
 const Login = () => {
-    const [username,setUsername] = useState('');
-    const [room,setRoom] = useState('');
+    const [username, setUsername] = useState('');
+    const [room, setRoom] = useState('');
     const handleUsernameChange = (e) => {
         setUsername(e.target.value);
     };
     const handleRoomChange = (e) => {
         setRoom(e.target.value);
     }
-    const onCreateRoomClick = ()=>{
-        let input = prompt('Introduce the name of the room : ');
-        if(input.length === 0)alert('You need to enter something !')
-        else setRoom(input);
-    }
+    // const onCreateRoomClick = () => {
+    //     let input = prompt('Introduce the name of the room : ');
+    //     if (input.length === 0) alert('You need to enter something !')
+    //     else setRoom(input);
+    // }
     const onLoginClick = async () => {
         if (username.length !== 0 && room.length !== 0) {
-            const token = (await axios.post(`http://localhost:3001/login`, { username,room }, config)).data.token;
-            localStorage.setItem('token',token);
+            const token = (await axios.post(`http://localhost:3001/login`, { username, room }, config)).data.token;
+            localStorage.setItem('token', token);
             window.location.reload();
         }
         else alert('You need to complete everything !');
@@ -42,43 +37,44 @@ const Login = () => {
                     alignItems: 'center',
                 }}
             >
-                <Typography component="h1" variant="h5">
-                    Login
-                </Typography>
-                <Box component="form" noValidate sx={{ mt: 1 }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        onChange={handleUsernameChange}
-                        fullWidth
-                        id="username"
-                        label="username"
-                        name="username"
-                        value={username}
-                        autoFocus
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        onChange={handleRoomChange}
-                        fullWidth
-                        id="room"
-                        label="room"
-                        name="room"
-                        value={room}
-                        autoFocus
-                    />
-                    <Grid container spacing = {2}>
-                        <Grid item xs={6}>
-                            <Button
-                                onClick={onLoginClick}
-                                fullWidth
-                                variant="contained"
-                            >
-                                Log in
-                            </Button>
-                        </Grid>
-                        <Grid item xs={6}>
+                <Paper elevation={5}>
+                    <Box padding={3} component="form" noValidate sx={{ mt: 1,textAlign:'center' }}>
+                        <Typography component="h1" variant="h5">
+                            Login
+                        </Typography>
+                        <TextField
+                            margin="normal"
+                            required
+                            onChange={handleUsernameChange}
+                            fullWidth
+                            id="username"
+                            label="username"
+                            name="username"
+                            value={username}
+                            autoFocus
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            onChange={handleRoomChange}
+                            fullWidth
+                            id="room"
+                            label="room"
+                            name="room"
+                            value={room}
+                            autoFocus
+                        />
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <Button
+                                    onClick={onLoginClick}
+                                    fullWidth
+                                    variant="contained"
+                                >
+                                    Log in
+                                </Button>
+                            </Grid>
+                            {/* <Grid item xs={6}>
                             <Button
                                 onClick={onCreateRoomClick}
                                 fullWidth
@@ -87,9 +83,10 @@ const Login = () => {
                             >
                                 Create a room
                             </Button>
+                        </Grid> */}
                         </Grid>
-                    </Grid>
-                </Box>
+                    </Box>
+                </Paper>
             </Box>
         </Container>
     );
