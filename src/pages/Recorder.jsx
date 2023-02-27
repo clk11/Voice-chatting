@@ -50,7 +50,7 @@ const Recorder = () => {
     <div>
       {user == null && (<ProgressBar />)}
       {user != null && (
-        <Chat Logout = {onClick}/>
+        <Chat user={user} logout = {onClick}/>
       )}
     </div>
   )
