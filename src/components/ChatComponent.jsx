@@ -1,29 +1,27 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { List, ListItem, Typography, Paper, Container, Button, IconButton } from '@mui/material';
+import { Typography, Paper, Container, Button, IconButton } from '@mui/material';
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 import { useState, useEffect } from 'react';
-
-const Chat = ({ logout,user }) => {
+import VoiceMessages from './VoiceMessages';
+const ChatComponent = ({ logout, user }) => {
     const [recording, setRecording] = useState(false);
     const [seconds, setSeconds] = useState(0);
-    useEffect(() => {
+    useEffect(() => {        
         let interval = null;
         if (recording) {
-            interval = setInterval(() => {
-                setSeconds(seconds => seconds + 1);
-            }, 1000);
+            interval = setInterval(()=>{setSeconds(seconds => seconds + 1)}, 1000);
         } else if (!recording && seconds !== 0)
             clearInterval(interval);
         return () => clearInterval(interval);
-    }, [recording, seconds]);  
+    }, [recording, seconds]);
     const onRecord = () => {
         if (recording) {
             setSeconds(0);
             setRecording(false);
-        }else setRecording(true);
-    }  
+        } else setRecording(true);
+    }     
     return (
         <Container style={{ paddingTop: '50px', width: '500px' }}>
             <Paper elevation={5} sx={{ borderStyle: 'solid', borderColor: 'Grey' }}>
@@ -39,35 +37,10 @@ const Chat = ({ logout,user }) => {
                         </Grid>
                     </Grid>
                     <Grid container justifyContent={'center'}>
-                        <Grid sx={{ height: '20rem' }} xs={12} item>
-                            <List sx={{ height: '20rem', overflow: 'auto' }}>
-                                <ListItem divider>
-                                    <Button fullWidth sx={{ color: 'Bla' }}>Alex</Button>
-                                </ListItem>
-                                <ListItem divider>
-                                    <Button fullWidth>Robert</Button>
-                                </ListItem>
-                                <ListItem divider>
-                                    <Button fullWidth sx={{ color: 'Bla' }}>Alex</Button>
-                                </ListItem>
-                                <ListItem divider>
-                                    <Button fullWidth>Robert</Button>
-                                </ListItem>
-                                <ListItem divider>
-                                    <Button fullWidth sx={{ color: 'Bla' }}>Alex</Button>
-                                </ListItem>
-                                <ListItem divider>
-                                    <Button fullWidth>Robert</Button>
-                                </ListItem>
-                                <ListItem divider>
-                                    <Button fullWidth sx={{ color: 'Bla' }}>Alex</Button>
-                                </ListItem>
-                                <ListItem divider>
-                                    <Button fullWidth>Robert</Button>
-                                </ListItem>
-                            </List>
+                        <Grid sx={{ height: '20rem' }} xs={12} item>                         
+                            <VoiceMessages Rec = {onRecord}/>
                         </Grid>
-                        <Grid item sx={{ paddingTop: '20px' }}>
+                        <Grid item sx={{ paddingTop: '40px' }}>
                             <IconButton
                                 onClick={onRecord}
                                 aria-label='send'
@@ -88,4 +61,4 @@ const Chat = ({ logout,user }) => {
     )
 }
 
-export default Chat
+export default ChatComponent

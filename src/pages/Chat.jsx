@@ -4,13 +4,13 @@ import axios from 'axios'
 import ProgressBar from '../components/ProgressBar'
 import io from 'socket.io-client';
 import TextField from '@mui/material/TextField';
-import Chat from '../components/Chat'
+import ChatComponent from '../components/ChatComponent';
 const socket = io.connect("http://localhost:3001");
 const config = {
   'Content-Type': 'application/json',
 };
 
-const Recorder = () => {
+const Chat = () => {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState('');
   const clear = () => {
@@ -50,10 +50,10 @@ const Recorder = () => {
     <div>
       {user == null && (<ProgressBar />)}
       {user != null && (
-        <Chat user={user} logout = {onClick}/>
+        <ChatComponent user={user} logout = {onClick}/>
       )}
     </div>
   )
 }
 
-export default Recorder
+export default Chat

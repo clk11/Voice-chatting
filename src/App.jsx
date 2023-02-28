@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
-import Recorder from './pages/Recorder';
-import AppContext from './contexts/AppContext';
+// import AppContext from './contexts/AppContext';
 import setAuthToken from './server/utils/setAuthToken'
+import Chat from './pages/Chat';
 const App = () => {
 	// const [username,setUsername] = useState('');
 	// const [room,setRoom] = useState('');
@@ -13,7 +13,7 @@ const App = () => {
 		<Router>
 			<Routes>
 				{(localStorage.getItem('token') === null ? false : true) ? (
-					<Route path='/' element={<Recorder />} />
+					<Route path='/' element={<Chat />} />
 				) : (
 					<Route path='/' element={<Login />} />
 				)}
