@@ -5,11 +5,10 @@ import Login from './pages/Login';
 import setAuthToken from './server/utils/setAuthToken'
 import Chat from './pages/Chat';
 const App = () => {
-	// const [username,setUsername] = useState('');
-	// const [room,setRoom] = useState('');
+	// const [func,setFunc] = useState(null);
 	setAuthToken(localStorage.token);
 	return (
-		// <AppContext.Provider value={{user}}>
+		// <AppContext.Provider value={{func,setFunc}}>
 		<Router>
 			<Routes>
 				{(localStorage.getItem('token') === null ? false : true) ? (

@@ -5,23 +5,50 @@ import { Typography, Paper, Container, Button, IconButton } from '@mui/material'
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 import { useState, useEffect } from 'react';
 import VoiceMessages from './VoiceMessages';
+import vmsg from "vmsg";
+const recorder = new vmsg.Recorder({
+    wasmURL: "https://unpkg.com/vmsg@0.3.0/vmsg.wasm"
+});
 const ChatComponent = ({ logout, user }) => {
-    const [recording, setRecording] = useState(false);
+    const [isRecording, setRecording] = useState(false);
+    const [isLoading, setLoading] = useState(false);
     const [seconds, setSeconds] = useState(0);
-    useEffect(() => {        
+    const [recordings, setRecordings] = useState([]);
+    const onRecord = async () => {
+        setLoading(true);
+        record();
+        if (isRecording) {
+            setLoading(false);
+            const blob = await recorder.stopRecording();
+            setRecording(false);
+            setRecordings(recordings.concat(URL.createObjectURL(blob)));
+        } else {
+            try {
+                await recorder.initAudio();
+                await recorder.initWorker();
+                recorder.startRecording();
+                setLoading(false);
+                setRecording(true);
+            } catch (e) {
+                console.error(e);
+                setLoading(false)
+            }
+        }
+    };
+    useEffect(() => {
         let interval = null;
-        if (recording) {
-            interval = setInterval(()=>{setSeconds(seconds => seconds + 1)}, 1000);
-        } else if (!recording && seconds !== 0)
+        if (isRecording) {
+            interval = setInterval(() => { setSeconds(seconds => seconds + 1) }, 1000);
+        } else if (!isRecording && seconds !== 0)
             clearInterval(interval);
         return () => clearInterval(interval);
-    }, [recording, seconds]);
-    const onRecord = () => {
-        if (recording) {
+    }, [isRecording, seconds]);
+    const record = () => {
+        if (isRecording) {
             setSeconds(0);
             setRecording(false);
         } else setRecording(true);
-    }     
+    }
     return (
         <Container style={{ paddingTop: '50px', width: '500px' }}>
             <Paper elevation={5} sx={{ borderStyle: 'solid', borderColor: 'Grey' }}>
@@ -33,21 +60,21 @@ const ChatComponent = ({ logout, user }) => {
                             </Typography>
                         </Grid>
                         <Grid item xs={4}>
-                            <Button onClick={logout} variant="contained" >Log off</Button>
+                            <Button disabled={isLoading} onClick={logout} variant="contained" >Log off</Button>
                         </Grid>
                     </Grid>
                     <Grid container justifyContent={'center'}>
-                        <Grid sx={{ height: '20rem' }} xs={12} item>                         
-                            <VoiceMessages Rec = {onRecord}/>
+                        <Grid sx={{ height: '20rem' }} xs={12} item>
+                            <VoiceMessages recordings={recordings} />
                         </Grid>
                         <Grid item sx={{ paddingTop: '40px' }}>
                             <IconButton
                                 onClick={onRecord}
                                 aria-label='send'
-                                color={recording ? 'error' : 'primary'}
+                                color={isRecording ? 'error' : 'primary'}
                             >
                                 <KeyboardVoiceIcon />
-                                {recording && (
+                                {isRecording && (
                                     <Typography>
                                         {seconds}s
                                     </Typography>
@@ -57,7 +84,7 @@ const ChatComponent = ({ logout, user }) => {
                     </Grid>
                 </Box>
             </Paper>
-        </Container>
+        </Container >
     )
 }
 
