@@ -9,11 +9,23 @@ import vmsg from "vmsg";
 const recorder = new vmsg.Recorder({
     wasmURL: "https://unpkg.com/vmsg@0.3.0/vmsg.wasm"
 });
-const ChatComponent = ({ logout, user }) => {
+const ChatComponent = ({ logout, user, socket }) => {
     const [isRecording, setRecording] = useState(false);
     const [isLoading, setLoading] = useState(false);
     const [seconds, setSeconds] = useState(0);
     const [recordings, setRecordings] = useState([]);
+
+    const sendMessage = async (blob) => {
+        await socket.emit('send_message', { url:blob, user });
+    }
+    useEffect(() => {
+        return async () => {
+            socket.on('received_message', obj => {
+                // setRecordings((rec) => [...rec, obj]);
+                // console.log(obj);
+            });
+        };
+    }, [socket])
     const onRecord = async () => {
         setLoading(true);
         record();
@@ -21,7 +33,7 @@ const ChatComponent = ({ logout, user }) => {
             setLoading(false);
             const blob = await recorder.stopRecording();
             setRecording(false);
-            setRecordings(recordings.concat(URL.createObjectURL(blob)));
+            sendMessage(blob);
         } else {
             try {
                 await recorder.initAudio();
@@ -64,7 +76,7 @@ const ChatComponent = ({ logout, user }) => {
                         </Grid>
                     </Grid>
                     <Grid container justifyContent={'center'}>
-                        <Grid sx={{ height: '20rem' }} xs={12} item>
+                        <Grid item sx={{ height: '20rem' }} xs={12}>
                             <VoiceMessages recordings={recordings} />
                         </Grid>
                         <Grid item sx={{ paddingTop: '40px' }}>

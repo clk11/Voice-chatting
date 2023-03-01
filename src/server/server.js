@@ -21,6 +21,7 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     socket.on("join_room", obj => {
         socket.join(obj.room);
+        console.log('joined');
     })
     socket.on("send_message", obj => {
         console.log(obj);

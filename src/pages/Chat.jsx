@@ -12,7 +12,6 @@ const config = {
 
 const Chat = () => {
   const [user, setUser] = useState(null);
-  const [message, setMessage] = useState('');
   const clear = () => {
     localStorage.removeItem('token');
     window.location.reload();
@@ -30,19 +29,10 @@ const Chat = () => {
       }
     }
   }, [])
-  useEffect(() => {
-    return async () => {
-      await socket.on('received_message', obj => {
-        alert(obj.message);
-      });
-    };
-  }, [socket])
   const joinRoom = async (obj) => {
     await socket.emit('join_room', obj);
   }
-  const sendMessage = async () => {
-    await socket.emit('send_message', { message, username: user.username, room: user.room });
-  }
+  
   const onClick = () => {
     clear();
   };
@@ -50,7 +40,7 @@ const Chat = () => {
     <div>
       {user == null && (<ProgressBar />)}
       {user != null && (
-        <ChatComponent user={user} logout = {onClick}/>
+        <ChatComponent socket={socket} user={user} logout = {onClick}/>
       )}
     </div>
   )
