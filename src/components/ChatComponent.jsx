@@ -15,14 +15,11 @@ const ChatComponent = ({ logout, user, socket }) => {
     const [seconds, setSeconds] = useState(0);
     const [recordings, setRecordings] = useState([]);
 
-    const sendMessage = async (blob) => {
-        await socket.emit('send_message', { url:blob, user });
-    }
     useEffect(() => {
         return async () => {
-            socket.on('received_message', obj => {
-                // setRecordings((rec) => [...rec, obj]);
-                // console.log(obj);
+            await socket.on('received_message', obj => {
+                obj.url = URL.createObjectURL(new Blob([obj.url], { type: "audio/mpeg" }))
+                setRecordings((rec) => [...rec, obj]);
             });
         };
     }, [socket])
@@ -33,7 +30,8 @@ const ChatComponent = ({ logout, user, socket }) => {
             setLoading(false);
             const blob = await recorder.stopRecording();
             setRecording(false);
-            sendMessage(blob);
+            await socket.emit('send_message', { url: blob, user });
+            setRecordings((rec) => [...rec, { url: URL.createObjectURL(blob), user }]);
         } else {
             try {
                 await recorder.initAudio();

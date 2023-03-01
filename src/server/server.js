@@ -21,11 +21,9 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     socket.on("join_room", obj => {
         socket.join(obj.room);
-        console.log('joined');
     })
     socket.on("send_message", obj => {
-        console.log(obj);
-        socket.broadcast.to(obj.room).emit("received_message", obj);
+        socket.broadcast.to(obj.user.room).emit("received_message", obj);
     });    
 })
 
