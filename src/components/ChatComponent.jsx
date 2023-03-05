@@ -21,8 +21,14 @@ const ChatComponent = ({ logout, user, socket }) => {
                 obj.url = URL.createObjectURL(new Blob([obj.url], { type: "audio/mpeg" }))
                 setRecordings((rec) => [...rec, obj]);
             });
+            await socket.on('getting_users', obj => {
+                console.log(obj);
+            })
         };
     }, [socket])
+    const showUsers = async () => {
+        await socket.emit('get_users', user.room);
+    }
     const onRecord = async () => {
         setLoading(true);
         record();
@@ -63,14 +69,17 @@ const ChatComponent = ({ logout, user, socket }) => {
         <Container style={{ paddingTop: '50px', width: '500px' }}>
             <Paper elevation={5} sx={{ borderStyle: 'solid', borderColor: 'Grey' }}>
                 <Box p={2}>
-                    <Grid container spacing={6}>
-                        <Grid item xs={8}>
+                    <Grid container spacing={4}>
+                        <Grid item xs={4}>
                             <Typography variant='h6' gutterBottom>
                                 {'Room : ' + user.room}
                             </Typography>
                         </Grid>
                         <Grid item xs={4}>
                             <Button disabled={isLoading} onClick={logout} variant="contained" >Log off</Button>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Button disabled={isLoading} onClick={showUsers} variant="contained" >Users</Button>
                         </Grid>
                     </Grid>
                     <Grid container justifyContent={'center'}>
