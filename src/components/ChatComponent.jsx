@@ -16,6 +16,7 @@ const ChatComponent = ({ logout, user, socket }) => {
     const [recordings, setRecordings] = useState([]);
 
     useEffect(() => {
+        getMessages();
         return async () => {
             await socket.on('received_message', obj => {
                 obj.url = URL.createObjectURL(new Blob([obj.url], { type: "audio/mpeg" }))
@@ -23,12 +24,19 @@ const ChatComponent = ({ logout, user, socket }) => {
             });
             await socket.on('getting_users', obj => {
                 console.log(obj);
-            })
+            });
+            await socket.on('getting_messages', obj => {
+                setRecordings(obj);
+            });
         };
     }, [socket])
-    const showUsers = async () => {
+    const getUsers = async () => {
         await socket.emit('get_users', user.room);
     }
+    const getMessages = async () => {
+        await socket.emit('get_messages', user.room);
+    }
+
     const onRecord = async () => {
         setLoading(true);
         record();
@@ -79,7 +87,7 @@ const ChatComponent = ({ logout, user, socket }) => {
                             <Button disabled={isLoading} onClick={logout} variant="contained" >Log off</Button>
                         </Grid>
                         <Grid item xs={4}>
-                            <Button disabled={isLoading} onClick={showUsers} variant="contained" >Users</Button>
+                            <Button disabled={isLoading} onClick={getUsers} variant="contained" >Users</Button>
                         </Grid>
                     </Grid>
                     <Grid container justifyContent={'center'}>
