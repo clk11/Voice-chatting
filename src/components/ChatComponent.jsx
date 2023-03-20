@@ -6,59 +6,71 @@ import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 import { useState, useEffect } from 'react';
 import VoiceMessages from './VoiceMessages';
 import vmsg from "vmsg";
+import ProgressBar from './ProgressBar'
 const recorder = new vmsg.Recorder({
     wasmURL: "https://unpkg.com/vmsg@0.3.0/vmsg.wasm"
 });
 const ChatComponent = ({ logout, user, socket }) => {
     const [isRecording, setRecording] = useState(false);
-    const [isLoading, setLoading] = useState(false);
     const [seconds, setSeconds] = useState(0);
+    const [loading, setLoading] = useState(false);
     const [recordings, setRecordings] = useState([]);
-
+    const getMessages = async () => {
+        await socket.emit('get_messages', user.room);
+    }
+    const getUsers = async () => {
+        await socket.emit('get_users', user.room);
+    }
     useEffect(() => {
-        getMessages();
+        return async () => {
+            await getMessages();
+        }
+    }, [])
+    useEffect(() => {
         return async () => {
             await socket.on('received_message', obj => {
-                obj.url = URL.createObjectURL(new Blob([obj.url], { type: "audio/mpeg" }))
-                setRecordings((rec) => [...rec, obj]);
+                obj.message = URL.createObjectURL(new Blob([obj.message], { type: "audio/mpeg" }))
+                setRecordings((rec) => [...rec, { message: obj.message, username: obj.user.username }]);
+                console.log(recordings);
             });
             await socket.on('getting_users', obj => {
                 console.log(obj);
             });
             await socket.on('getting_messages', obj => {
-                setRecordings(obj);
+                if (obj == null) setRecordings([]);
+                else {
+                    obj.forEach(item => {
+                        item.message = URL.createObjectURL(new Blob([item.message], { type: "audio/mpeg" }))
+                    });
+                    setRecordings(obj);
+                }
             });
         };
     }, [socket])
-    const getUsers = async () => {
-        await socket.emit('get_users', user.room);
-    }
-    const getMessages = async () => {
-        await socket.emit('get_messages', user.room);
-    }
-
     const onRecord = async () => {
-        setLoading(true);
         record();
         if (isRecording) {
-            setLoading(false);
             const blob = await recorder.stopRecording();
             setRecording(false);
-            await socket.emit('send_message', { url: blob, user });
-            setRecordings((rec) => [...rec, { url: URL.createObjectURL(blob), user }]);
+            await socket.emit('send_message', { message: blob, user });
+            setRecordings((rec) => [...rec, { message: URL.createObjectURL(blob), username: user.username }]);
         } else {
             try {
                 await recorder.initAudio();
                 await recorder.initWorker();
                 recorder.startRecording();
-                setLoading(false);
                 setRecording(true);
             } catch (e) {
                 console.error(e);
-                setLoading(false)
             }
         }
     };
+    const record = () => {
+        if (isRecording) {
+            setSeconds(0);
+            setRecording(false);
+        } else setRecording(true);
+    }
     useEffect(() => {
         let interval = null;
         if (isRecording) {
@@ -66,51 +78,48 @@ const ChatComponent = ({ logout, user, socket }) => {
         } else if (!isRecording && seconds !== 0)
             clearInterval(interval);
         return () => clearInterval(interval);
-    }, [isRecording, seconds]);
-    const record = () => {
-        if (isRecording) {
-            setSeconds(0);
-            setRecording(false);
-        } else setRecording(true);
-    }
+    }, [isRecording, seconds, onRecord]);
     return (
         <Container style={{ paddingTop: '50px', width: '500px' }}>
-            <Paper elevation={5} sx={{ borderStyle: 'solid', borderColor: 'Grey' }}>
-                <Box p={2}>
-                    <Grid container spacing={4}>
-                        <Grid item xs={4}>
-                            <Typography variant='h6' gutterBottom>
-                                {'Room : ' + user.room}
-                            </Typography>
+            {recordings == null && (<ProgressBar />)}
+            {recordings != null && (
+                <Paper elevation={5} sx={{ borderStyle: 'solid', borderColor: 'Grey' }}>
+                    <Box p={2}>
+                        <Grid container spacing={4}>
+                            <Grid item xs={4}>
+                                <Typography variant='h6' gutterBottom>
+                                    {'Room : ' + user.room}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Button onClick={logout} variant="contained" >Log off</Button>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Button onClick={getUsers} variant="contained" >Users</Button>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={4}>
-                            <Button disabled={isLoading} onClick={logout} variant="contained" >Log off</Button>
+                        <Grid container justifyContent={'center'}>
+                            <Grid item sx={{ height: '20rem' }} xs={12}>
+                                <VoiceMessages recordings={recordings} />
+                            </Grid>
+                            <Grid item sx={{ paddingTop: '40px' }}>
+                                <IconButton
+                                    onClick={onRecord}
+                                    aria-label='send'
+                                    color={isRecording ? 'error' : 'primary'}
+                                >
+                                    <KeyboardVoiceIcon />
+                                    {isRecording && (
+                                        <Typography>
+                                            {seconds}s
+                                        </Typography>
+                                    )}
+                                </IconButton>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={4}>
-                            <Button disabled={isLoading} onClick={getUsers} variant="contained" >Users</Button>
-                        </Grid>
-                    </Grid>
-                    <Grid container justifyContent={'center'}>
-                        <Grid item sx={{ height: '20rem' }} xs={12}>
-                            <VoiceMessages recordings={recordings} />
-                        </Grid>
-                        <Grid item sx={{ paddingTop: '40px' }}>
-                            <IconButton
-                                onClick={onRecord}
-                                aria-label='send'
-                                color={isRecording ? 'error' : 'primary'}
-                            >
-                                <KeyboardVoiceIcon />
-                                {isRecording && (
-                                    <Typography>
-                                        {seconds}s
-                                    </Typography>
-                                )}
-                            </IconButton>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Paper>
+                    </Box>
+                </Paper>
+            )}
         </Container >
     )
 }

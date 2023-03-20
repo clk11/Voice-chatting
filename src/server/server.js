@@ -25,14 +25,12 @@ const io = new Server(server, {
 });
 
 
-io.on("connection", (socket) => {
-    socket.on('disconnecting', obj => {
-
-    })
+io.on("connection", (socket) => {    
     socket.on("join_room", obj => {
         socket.join(obj.room);
     })
     socket.on("send_message", obj => {
+        console.log(obj);
         context.addMessage(obj.user.room, obj.user.username, obj.message);
         socket.broadcast.to(obj.user.room).emit("received_message", obj);
     });
@@ -44,6 +42,7 @@ io.on("connection", (socket) => {
         socket.emit("getting_users", arr);
     });
     socket.on("get_messages", room => {
+        console.log(context.rooms.get(room));
         socket.emit("getting_messages", context.rooms.get(room))
     });
 })
@@ -51,6 +50,7 @@ io.on("connection", (socket) => {
 app.post('/login', async (req, res) => {
     const ipAddress = req.socket.remoteAddress;
     const { username, room } = req.body;
+    // if (context.get(room) != undefined && context.get(room).get(username) != undefined) {
     await db.query(`insert into t_user (username,room,ip)values($1,$2,$3);`, [username, room, ipAddress]);
     const user = {
         username,
@@ -63,6 +63,7 @@ app.post('/login', async (req, res) => {
         expiresIn: '2h',
     });
     return res.json({ token });
+    // } else return res.status(500).send({ err: 'Already a user with that username !' });
 });
 
 app.get('/', auth, async (req, res) => {
