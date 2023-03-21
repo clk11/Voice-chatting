@@ -5,9 +5,6 @@ class Chat {
     }
     addMessage(room, username, message) {
         if (this.rooms.get(room) == undefined) this.rooms.set(room, []);
-        if (this.users.get(room) == undefined)
-            this.users.set(room, new Map().set(username, 1));
-        else this.users.get(room).set(username, 1);
         let messages = this.rooms.get(room);
         messages.push({ username, message });
         this.rooms.set(room, messages);

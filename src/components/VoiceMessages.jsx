@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { List, ListItem } from '@mui/material'
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';

@@ -14,16 +14,16 @@ const Login = () => {
     const handleRoomChange = (e) => {
         setRoom(e.target.value);
     }
-    // const onCreateRoomClick = () => {
-    //     let input = prompt('Introduce the name of the room : ');
-    //     if (input.length === 0) alert('You need to enter something !')
-    //     else setRoom(input);
-    // }
     const onLoginClick = async () => {
         if (username.length !== 0 && room.length !== 0) {
-            const token = (await axios.post(`http://localhost:3001/login`, { username, room }, config)).data.token;
-            localStorage.setItem('token', token);
-            window.location.reload();
+            let token;
+            try {
+                token = (await axios.post(`http://localhost:3001/login`, { username, room }, config)).data.token;
+                localStorage.setItem('token', token);
+                window.location.reload();
+            }catch(error){
+                alert(error.response.data.err);
+            }
         }
         else alert('You need to complete everything !');
     };
@@ -38,7 +38,7 @@ const Login = () => {
                 }}
             >
                 <Paper elevation={5}>
-                    <Box padding={3} component="form" noValidate sx={{ mt: 1,textAlign:'center' }}>
+                    <Box padding={3} component="form" noValidate sx={{ mt: 1, textAlign: 'center' }}>
                         <Typography component="h1" variant="h5">
                             Login
                         </Typography>
