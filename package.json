@@ -28,7 +28,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "client" : "npm start",
+    "client": "npm start",
     "server": "cd src/server && nodemon server.js",
     "dev": "concurrently \"npm run client\" \"npm run server\"",
     "start": "react-scripts start",
@@ -53,5 +53,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
   }
 }
