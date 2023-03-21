@@ -47,10 +47,11 @@ const ChatComponent = ({ logout, user, socket }) => {
         };
     }, [socket])
     useEffect(() => {
+        if (seconds == 1) setLoading(false);
         let interval = null;
-        if (isRecording) {
+        if (isRecording)
             interval = setInterval(() => { setSeconds(seconds => seconds + 1) }, 1000);
-        } else if (!isRecording && seconds !== 0)
+        else if (!isRecording && seconds !== 0)
             clearInterval(interval);
         return () => clearInterval(interval);
     }, [isRecording, seconds, onRecord]);
@@ -61,22 +62,25 @@ const ChatComponent = ({ logout, user, socket }) => {
     async function getUsers() {
         setOpen(true);
         await socket.emit('get_users', user.room);
-    }    
+    }
     async function onRecord() {
-        record();
-        if (isRecording) {
-            const blob = await recorder.stopRecording();
-            setRecording(false);
-            await socket.emit('send_message', { message: blob, user });
-            setRecordings((rec) => [...rec, { message: URL.createObjectURL(blob), username: user.username }]);
-        } else {
-            try {
-                await recorder.initAudio();
-                await recorder.initWorker();
-                recorder.startRecording();
-                setRecording(true);
-            } catch (e) {
-                console.error(e);
+        if (!loading) {
+            record();
+            if (isRecording) {
+                const blob = await recorder.stopRecording();
+                setRecording(false);
+                await socket.emit('send_message', { message: blob, user });
+                setRecordings((rec) => [...rec, { message: URL.createObjectURL(blob), username: user.username }]);
+            } else {
+                try {
+                    setLoading(true);
+                    await recorder.initAudio();
+                    await recorder.initWorker();
+                    recorder.startRecording();
+                    setRecording(true);
+                } catch (e) {
+                    console.error(e);
+                }
             }
         }
     };
