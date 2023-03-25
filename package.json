@@ -28,9 +28,6 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "client": "npm start",
-    "server": "cd src/server && nodemon server.js",
-    "dev": "concurrently \"npm run client\" \"npm run server\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject"

@@ -4,7 +4,7 @@ const cors = require('cors');
 const http = require("http");
 const jwt = require('jsonwebtoken');
 const config = require('config');
-const db = require('./db');
+// const db = require('./db');
 const auth = require('./middlewares/auth');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -60,8 +60,9 @@ app.post('/login', async (req, res) => {
             context.users.get(room).set(username, 1);
         } else checkAll = false;
     }
-    if (checkAll)
-        await db.query(`insert into t_user (username,room,ip)values($1,$2,$3);`, [username, room, ipAddress]);
+    if (checkAll){
+        // await db.query(`insert into t_user (username,room,ip)values($1,$2,$3);`, [username, room, ipAddress]);
+    }
     else return res.status(500).send({ err: 'A user with this username was already connected ! Wait until the room is destroyed and try again !\n !!! A room is destroyed when every user logged off the room . ' });
     const user = {
         username,
