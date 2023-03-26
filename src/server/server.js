@@ -48,7 +48,7 @@ io.on("connection", (socket) => {
     });
 })
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     const ipAddress = req.socket.remoteAddress;
     const { username, room } = req.body;
     let checkAll = true;
@@ -77,7 +77,7 @@ app.post('/login', async (req, res) => {
     return res.json({ token });
 });
 
-app.get('/', auth, async (req, res) => {
+app.get('/api/', auth, async (req, res) => {
     try {
         res.json({ user: req.user })
     } catch (err) {

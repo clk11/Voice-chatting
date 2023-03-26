@@ -18,7 +18,7 @@ const Login = () => {
         if (username.length !== 0 && room.length !== 0) {
             let token;
             try {
-                token = (await axios.post(`http://localhost:3001/login`, { username, room }, config)).data.token;
+                token = (await axios.post(`http://localhost:3001/api/login`, { username, room }, config)).data.token;
                 localStorage.setItem('token', token);
                 window.location.reload();
             }catch(error){

@@ -13,7 +13,7 @@ const Chat = () => {
   useEffect(() => {
     return async () => {
       try {
-        let result = await axios.get('http://localhost:3001/', config);
+        let result = await axios.get('http://localhost:3001/api/', config);
         if (result != null) {
           setUser(result.data.user)
           joinRoom(result.data.user)
