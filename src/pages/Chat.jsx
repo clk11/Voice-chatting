@@ -3,7 +3,7 @@ import axios from 'axios'
 import ProgressBar from '../components/ProgressBar'
 import io from 'socket.io-client';
 import ChatComponent from '../components/ChatComponent';
-const socket = io.connect("http://localhost:3001");
+const socket = io.connect("/");
 const config = {
   'Content-Type': 'application/json',
 };
@@ -11,18 +11,17 @@ const config = {
 const Chat = () => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    return async () => {
+    const fetchData = async () => {
       try {
-        let result = await axios.get('http://localhost:3001/api/', config);
-        if (result != null) {
-          setUser(result.data.user)
-          joinRoom(result.data.user)
-        }
+        const result = await axios.get('/api', config);
+        setUser(result.data.user);
+        joinRoom(result.data.user);
       } catch (err) {
         clear();
       }
-    }
-  }, [])
+    };
+    fetchData();
+  }, []);
   function clear() {
     localStorage.removeItem('token');
     window.location.reload();
@@ -31,16 +30,15 @@ const Chat = () => {
     await socket.emit('join_room', obj);
   }
 
-  const onClick = async () => {
+  const handleLogout = async () => {
     await socket.emit('logout', user);
     clear();
   };
   return (
     <div>
-      {user == null && (<ProgressBar />)}
-      {user != null && (
-        <ChatComponent socket={socket} user={user} logout={onClick} />
-      )}
+      <div>
+        {user === null ? <ProgressBar /> : <ChatComponent socket={socket} user={user} logout={handleLogout} />}
+      </div>
     </div>
   )
 }

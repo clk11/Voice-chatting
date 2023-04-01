@@ -17,6 +17,9 @@ app.use(cors());
 
 //
 
+app.set('trust proxy', true);
+
+
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:3000",
@@ -48,7 +51,7 @@ io.on("connection", (socket) => {
     });
 })
 
-app.post('/api/login', async (req, res) => {
+app.post('/login', async (req, res) => {
     const ipAddress = req.socket.remoteAddress;
     const { username, room } = req.body;
     let checkAll = true;
@@ -60,7 +63,7 @@ app.post('/api/login', async (req, res) => {
             context.users.get(room).set(username, 1);
         } else checkAll = false;
     }
-    if (checkAll){
+    if (checkAll) {
         // await db.query(`insert into t_user (username,room,ip)values($1,$2,$3);`, [username, room, ipAddress]);
     }
     else return res.status(500).send({ err: 'A user with this username was already connected ! Wait until the room is destroyed and try again !\n !!! A room is destroyed when every user logged off the room . ' });
@@ -77,7 +80,7 @@ app.post('/api/login', async (req, res) => {
     return res.json({ token });
 });
 
-app.get('/api/', auth, async (req, res) => {
+app.get('/api', auth, async (req, res) => {
     try {
         res.json({ user: req.user })
     } catch (err) {
