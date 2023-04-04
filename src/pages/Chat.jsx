@@ -3,7 +3,7 @@ import axios from 'axios'
 import ProgressBar from '../components/ProgressBar'
 import io from 'socket.io-client';
 import ChatComponent from '../components/ChatComponent';
-const socket = io.connect("/");
+const socket = io("http://brainstormish.live:3001");
 const config = {
   'Content-Type': 'application/json',
 };
@@ -13,7 +13,7 @@ const Chat = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await axios.get('/api', config);
+        const result = await axios.get('http://brainstormish.live:3001/api', config);
         setUser(result.data.user);
         joinRoom(result.data.user);
       } catch (err) {

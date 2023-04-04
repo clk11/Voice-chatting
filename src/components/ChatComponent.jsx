@@ -23,29 +23,41 @@ const ChatComponent = ({ logout, user, socket }) => {
     //
     useEffect(() => {
         return async () => {
+            console.log(user);
             await getMessages();
         }
     }, [])
     useEffect(() => {
-        return async () => {
-            await socket.on('received_message', obj => {
-                obj.message = URL.createObjectURL(new Blob([obj.message], { type: "audio/mpeg" }))
-                setRecordings((rec) => [...rec, { message: obj.message, username: obj.user.username }]);
-            });
-            await socket.on('getting_users', obj => {
-                setUsers(obj);
-            });
-            await socket.on('getting_messages', obj => {
-                if (obj == null) setRecordings([]);
-                else {
-                    obj.forEach(item => {
-                        item.message = URL.createObjectURL(new Blob([item.message], { type: "audio/mpeg" }))
-                    });
-                    setRecordings(obj);
-                }
-            });
-        };
-    }, [socket])
+  const handleReceivedMessage = obj => {
+    obj.message = URL.createObjectURL(new Blob([obj.message], { type: "audio/mpeg" }));
+    setRecordings(rec => [...rec, { message: obj.message, username: obj.user.username }]);
+  };
+  const handleGettingUsers = obj => {
+    console.log('good');
+    console.log(obj);
+    setUsers(obj);
+  };
+  const handleGettingMessages = obj => {
+    if (obj == null) {
+      setRecordings([]);
+    } else {
+      obj.forEach(item => {
+        item.message = URL.createObjectURL(new Blob([item.message], { type: "audio/mpeg" }));
+      });
+      setRecordings(obj);
+    }
+  };
+
+  socket.on('received_message', handleReceivedMessage);
+  socket.on('getting_users', handleGettingUsers);
+  socket.on('getting_messages', handleGettingMessages);
+
+  return () => {
+    socket.off('received_message', handleReceivedMessage);
+    socket.off('getting_users', handleGettingUsers);
+    socket.off('getting_messages', handleGettingMessages);
+  };
+}, [socket]);
     useEffect(() => {
         if (seconds == 1) setLoading(false);
         let interval = null;
@@ -105,7 +117,7 @@ const ChatComponent = ({ logout, user, socket }) => {
                                 </Typography>
                             </Grid>
                             <Grid item xs={4}>
-                                <Button onClick={logout} variant="contained" >Log off</Button>
+                                <Button onClick={logout} variant="contained" >Logoff</Button>
                             </Grid>
                             <Grid item xs={4}>
                                 <Button onClick={getUsers} variant="contained" >Users</Button>

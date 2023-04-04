@@ -1,4 +1,5 @@
 import React from 'react'
+import {useEffect} from 'react'
 import { Typography, Modal, List, ListItem, Grid, Box } from '@mui/material';
 import Chip from '@mui/material/Chip';
 
@@ -14,6 +15,7 @@ const style = {
     p: 5,
 };
 const ChatUsers = ({ users, open, setOpen }) => {
+    useEffect(()=>{console.log(users)},[])
     function formatName(str) {
         if (str.length > 10)
             return str.slice(0, 10) + '...';

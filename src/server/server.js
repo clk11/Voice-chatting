@@ -17,14 +17,15 @@ app.use(cors());
 
 //
 
-app.set('trust proxy', true);
 
 
 const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:3000",
-        methods: null
-    }
+  cors: {
+    origin: "http://brainstormish.live",
+    methods: ["GET", "POST"],
+    credentials: true,
+    allowHeaders: ["Content-Type", "Authorization"],
+  },
 });
 
 
@@ -32,10 +33,14 @@ io.on("connection", (socket) => {
     socket.on("logout", obj => {
         context.logoff(obj.username, obj.room);
     })
-    socket.on("join_room", obj => {
+    socket.on("join_room", obj => { 
+        console.log(obj.username + ' joined the room .')
         socket.join(obj.room);
     })
     socket.on("send_message", obj => {
+        console.log('send message---------------------')
+	console.log(obj);
+	console.log('----------------------------------')
         context.addMessage(obj.user.room, obj.user.username, obj.message);
         socket.broadcast.to(obj.user.room).emit("received_message", obj);
     });
@@ -44,14 +49,20 @@ io.on("connection", (socket) => {
         context.users.get(room).forEach((first, second) => {
             arr.push({ username: second, status: first == 1 ? 'on' : 'off' })
         });
+	    
+	    console.log('Users : \n',arr,'\n------');
         socket.emit("getting_users", arr);
     });
     socket.on("get_messages", room => {
-        socket.emit("getting_messages", context.rooms.get(room))
+	console.log('get messages --------------')
+	console.log(context.rooms.get(room))
+ 	console.log('----------------------------')
+        socket.emit("getting_messages", context.rooms.get(room));
     });
 })
 
 app.post('/login', async (req, res) => {
+	console.log('touches the login endpoint')
     const ipAddress = req.socket.remoteAddress;
     const { username, room } = req.body;
     let checkAll = true;
@@ -67,7 +78,8 @@ app.post('/login', async (req, res) => {
         // await db.query(`insert into t_user (username,room,ip)values($1,$2,$3);`, [username, room, ipAddress]);
     }
     else return res.status(500).send({ err: 'A user with this username was already connected ! Wait until the room is destroyed and try again !\n !!! A room is destroyed when every user logged off the room . ' });
-    const user = {
+     console.log(context.users.size+ '\n' + context.rooms.size);    
+const user = {
         username,
         room
     }
@@ -81,6 +93,7 @@ app.post('/login', async (req, res) => {
 });
 
 app.get('/api', auth, async (req, res) => {
+console.log('touches the api endpoint');
     try {
         res.json({ user: req.user })
     } catch (err) {
