@@ -1,3 +1,9 @@
-To be able to run the application you need to first of all run "npm i" to install all the packages .
-To start the server for the react app you run "npm start"
-To start the server for the backend application you call "node /src/server/server.js"
+###1)You need to install all the required node packages
+
+Terminal command
+
+`$ npm i`
+
+###2)To start the server for the react app you run "npm start"
+
+###3)To start the server for the backend application you call "node /src/server/server.js"
