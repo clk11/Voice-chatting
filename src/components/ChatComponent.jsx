@@ -98,7 +98,6 @@ const ChatComponent = ({ logout, user, socket }) => {
             setRecording(false);
         } else setRecording(true);
     }
-    //
     return (
         <Container style={{ paddingTop: '50px', width: '500px' }}>
             {recordings == null && (<ProgressBar />)}
