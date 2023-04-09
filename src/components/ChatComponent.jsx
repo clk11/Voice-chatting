@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import VoiceMessages from './VoiceMessages';
 import ProgressBar from './ProgressBar'
 import ChatUsers from './ChatUsers';
-
+//Commited 
 const ChatComponent = ({ logout, user, socket }) => {
     //Modal
     const [open, setOpen] = useState(false);
