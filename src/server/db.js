@@ -1,10 +1,10 @@
 const { Pool } = require('pg');
 const context = new Pool({
-	user: 'postgres',
-	password: '7139852465',
-	host: 'localhost',
-	port: 5432,
-	database: 'voicedb',
+	user: '',
+	password: '',
+	host: ',
+	port: ,
+	database: '',
 });
 
 module.exports = {
